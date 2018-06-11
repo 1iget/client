@@ -1680,6 +1680,15 @@
     },
     {
       "type": "enum",
+      "name": "GetThreadNonblockReason",
+      "symbols": [
+        "GENERAL_0",
+        "PUSH_1",
+        "FOREGROUND_2"
+      ]
+    },
+    {
+      "type": "enum",
       "name": "GetThreadNonblockPgMode",
       "symbols": [
         "DEFAULT_0",
@@ -2406,10 +2415,6 @@
           "type": "ConversationID"
         },
         {
-          "name": "reason",
-          "type": "GetThreadReason"
-        },
-        {
           "name": "query",
           "type": [
             null,
@@ -2473,7 +2478,7 @@
         },
         {
           "name": "reason",
-          "type": "GetThreadReason"
+          "type": "GetThreadNonblockReason"
         },
         {
           "name": "pgmode",

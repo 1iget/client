@@ -92,7 +92,6 @@ func (s *BlockingSender) addPrevPointersAndCheckConvID(ctx context.Context, msg 
 	}
 
 	res, err := s.G().ConvSource.Pull(ctx, conv.GetConvID(), msg.ClientHeader.Sender,
-		chat1.GetThreadReason_PREPARE,
 		&chat1.GetThreadQuery{
 			DisableResolveSupersedes: true,
 		},
@@ -216,7 +215,7 @@ func (s *BlockingSender) getAllDeletedEdits(ctx context.Context, msg chat1.Messa
 
 	// Get the one message to be deleted by ID.
 	var uid gregor1.UID = s.G().Env.GetUID().ToBytes()
-	deleteTargets, err := s.G().ConvSource.GetMessages(ctx, conv, uid, []chat1.MessageID{deleteTargetID}, nil)
+	deleteTargets, err := s.G().ConvSource.GetMessages(ctx, conv, uid, []chat1.MessageID{deleteTargetID})
 	if err != nil {
 		return msg, nil, err
 	}
@@ -255,7 +254,6 @@ func (s *BlockingSender) getAllDeletedEdits(ctx context.Context, msg chat1.Messa
 	// and the server. This is an opportunity for the server to retain messages that should
 	// have been deleted without getting caught.
 	tv, err := s.G().ConvSource.Pull(ctx, conv.GetConvID(), msg.ClientHeader.Sender,
-		chat1.GetThreadReason_PREPARE,
 		&chat1.GetThreadQuery{
 			MarkAsRead:   false,
 			MessageTypes: []chat1.MessageType{chat1.MessageType_EDIT, chat1.MessageType_ATTACHMENTUPLOADED},

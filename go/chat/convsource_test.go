@@ -63,7 +63,6 @@ func testGetThreadSupersedes(t *testing.T, deleteHistory bool) {
 	require.NoError(t, err)
 	msgID := msgBoxed.GetMessageID()
 	thread, err := tc.ChatG.ConvSource.Pull(ctx, res.ConvID, u.User.GetUID().ToBytes(),
-		chat1.GetThreadReason_GENERAL,
 		&chat1.GetThreadQuery{
 			MessageTypes: []chat1.MessageType{chat1.MessageType_TEXT},
 		}, nil)
@@ -90,7 +89,6 @@ func testGetThreadSupersedes(t *testing.T, deleteHistory bool) {
 
 	t.Logf("testing an edit")
 	thread, err = tc.ChatG.ConvSource.Pull(ctx, res.ConvID, u.User.GetUID().ToBytes(),
-		chat1.GetThreadReason_GENERAL,
 		&chat1.GetThreadQuery{
 			MessageTypes: []chat1.MessageType{chat1.MessageType_TEXT},
 		}, nil)
@@ -130,7 +128,6 @@ func testGetThreadSupersedes(t *testing.T, deleteHistory bool) {
 	require.NoError(t, err)
 	deleteMsgID := deleteMsgBoxed.GetMessageID()
 	thread, err = tc.ChatG.ConvSource.Pull(ctx, res.ConvID, u.User.GetUID().ToBytes(),
-		chat1.GetThreadReason_GENERAL,
 		&chat1.GetThreadQuery{
 			MessageTypes: []chat1.MessageType{chat1.MessageType_TEXT},
 		}, nil)
@@ -139,7 +136,6 @@ func testGetThreadSupersedes(t *testing.T, deleteHistory bool) {
 
 	t.Logf("testing disabling resolve")
 	thread, err = tc.ChatG.ConvSource.Pull(ctx, res.ConvID, u.User.GetUID().ToBytes(),
-		chat1.GetThreadReason_GENERAL,
 		&chat1.GetThreadQuery{
 			MessageTypes: []chat1.MessageType{
 				chat1.MessageType_TEXT,
@@ -201,7 +197,6 @@ func TestExplodeNow(t *testing.T) {
 
 	msgID := msgBoxed.GetMessageID()
 	thread, err := tc.ChatG.ConvSource.Pull(ctx, res.ConvID, u.User.GetUID().ToBytes(),
-		chat1.GetThreadReason_GENERAL,
 		&chat1.GetThreadQuery{
 			MessageTypes: []chat1.MessageType{chat1.MessageType_TEXT},
 		}, nil)
@@ -235,7 +230,6 @@ func TestExplodeNow(t *testing.T) {
 
 	t.Logf("testing an edit")
 	thread, err = tc.ChatG.ConvSource.Pull(ctx, res.ConvID, u.User.GetUID().ToBytes(),
-		chat1.GetThreadReason_GENERAL,
 		&chat1.GetThreadQuery{
 			MessageTypes: []chat1.MessageType{chat1.MessageType_TEXT},
 		}, nil)
@@ -269,7 +263,6 @@ func TestExplodeNow(t *testing.T) {
 
 	deleteMsgID := deleteMsgBoxed.GetMessageID()
 	thread, err = tc.ChatG.ConvSource.Pull(ctx, res.ConvID, u.User.GetUID().ToBytes(),
-		chat1.GetThreadReason_GENERAL,
 		&chat1.GetThreadQuery{
 			MessageTypes: []chat1.MessageType{chat1.MessageType_TEXT},
 		}, nil)
@@ -642,7 +635,6 @@ func TestGetThreadCaching(t *testing.T) {
 	tc.ChatG.InboxSource.Disconnected(ctx)
 	t.Logf("make sure we get offline error")
 	thread, err := tc.ChatG.ConvSource.Pull(ctx, res.ConvID, u.User.GetUID().ToBytes(),
-		chat1.GetThreadReason_GENERAL,
 		&chat1.GetThreadQuery{
 			MessageTypes: []chat1.MessageType{chat1.MessageType_TEXT},
 		}, nil)
@@ -653,7 +645,6 @@ func TestGetThreadCaching(t *testing.T) {
 	tc.ChatG.ConvSource.Connected(ctx)
 	tc.ChatG.InboxSource.Connected(ctx)
 	thread, err = tc.ChatG.ConvSource.Pull(ctx, res.ConvID, u.User.GetUID().ToBytes(),
-		chat1.GetThreadReason_GENERAL,
 		&chat1.GetThreadQuery{
 			MessageTypes: []chat1.MessageType{chat1.MessageType_TEXT},
 		}, nil)
@@ -673,7 +664,6 @@ func TestGetThreadCaching(t *testing.T) {
 
 	ctx = newTestContextWithTlfMock(tc, failingTI)
 	thread, err = tc.ChatG.ConvSource.Pull(ctx, res.ConvID, u.User.GetUID().ToBytes(),
-		chat1.GetThreadReason_GENERAL,
 		&chat1.GetThreadQuery{
 			MessageTypes: []chat1.MessageType{chat1.MessageType_TEXT},
 		}, nil)
@@ -760,7 +750,7 @@ func TestGetThreadHoleResolution(t *testing.T) {
 	tc.Context().ConvSource.SetRemoteInterface(func() chat1.RemoteInterface {
 		return newNoGetThreadRemote(ri)
 	})
-	thread, err := tc.Context().ConvSource.Pull(ctx, convID, uid, chat1.GetThreadReason_GENERAL, nil, nil)
+	thread, err := tc.Context().ConvSource.Pull(ctx, convID, uid, nil, nil)
 	require.NoError(t, err)
 	require.Equal(t, holes+2, len(thread.Messages))
 	require.Equal(t, msg.GetMessageID(), thread.Messages[0].GetMessageID())
@@ -768,7 +758,7 @@ func TestGetThreadHoleResolution(t *testing.T) {
 
 	// Make sure we don't consider it a hit if we end the fetch with a hole
 	require.NoError(t, tc.Context().ConvSource.Clear(ctx, convID, uid))
-	_, err = tc.Context().ConvSource.Pull(ctx, convID, uid, chat1.GetThreadReason_GENERAL, nil, nil)
+	_, err = tc.Context().ConvSource.Pull(ctx, convID, uid, nil, nil)
 	require.Error(t, err)
 }
 
@@ -1022,7 +1012,7 @@ func TestClearFromDelete(t *testing.T) {
 	}
 
 	require.NoError(t, hcs.storage.MaybeNuke(context.TODO(), true, nil, conv.GetConvID(), uid))
-	_, err = hcs.GetMessages(ctx, conv, uid, []chat1.MessageID{3, 2}, nil)
+	_, err = hcs.GetMessages(ctx, conv, uid, []chat1.MessageID{3, 2})
 	require.NoError(t, err)
 	tv, err := hcs.PullLocalOnly(ctx, conv.GetConvID(), uid, nil, nil, 0)
 	require.NoError(t, err)
